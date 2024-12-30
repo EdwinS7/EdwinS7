@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Image Gallery</title>
+    <style>
+        :root {
+            --background: #121212;
+            --surface: #1e1e1e;
+            --primary: #bb86fc;
+            --text: #ffffff;
+            --text-secondary: #a0a0a0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background);
+            color: var(--text);
+            position: relative;
+            overflow-x: hidden;
+            animation: fadeIn 1.5s ease-in-out forwards;
+            z-index: 1; /* Ensure content is above background animation */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                linear-gradient(transparent 0%, rgba(187, 134, 252, 0.03) 50%, transparent 100%),
+                radial-gradient(circle at 50% 50%, rgba(187, 134, 252, 0.05) 0%, transparent 50%);
+            background-size: 100% 300%, 200% 200%;
+            animation: moveBackground 15s ease infinite;
+            pointer-events: none;
+            z-index: -1; /* Move background behind the content */
+        }
+
+        @keyframes moveBackground {
+            0%, 100% {
+                background-position: 0% 0%, center center;
+            }
+            50% {
+                background-position: 0% 100%, 60% 40%;
+            }
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(18, 18, 18, 0.95);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 1000;
+            padding: 0.75rem 1rem;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .nav-button {
+            padding: 0.5rem 1.25rem;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            background: transparent;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-button:hover {
+            background: var(--primary);
+            color: var(--background);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(187, 134, 252, 0.3);
+        }
+
+        .content {
+            max-width: 1400px;
+            margin: 100px auto 0;
+            padding: 0 2rem;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .gallery-item {
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease-out;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .enlarged-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .enlarged-view img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            background: rgba(187, 134, 252, 0.8);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--surface);
+            text-align: right;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            z-index: 1000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .gallery-item {
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease-out;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .description {
+            padding: 1rem;
+            background: var(--surface);
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.9rem;
+            display: block;
+            width: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .description h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .description p {
+            margin: 0.5rem 0 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            right: 0; /* Align to the right */
+            width: 100%; /* Full width */
+            background: var(--surface);
+            text-align: right;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            z-index: 1000; /* Ensure it stays on top of other elements */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box; /* Prevents padding from causing overflow */
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>PF Haxx</h1>
+            <div class="nav-buttons">
+                <a href="https://discord.gg/SG2exQJdTm" class="nav-button">Discord</a>
+                <a href="https://www.youtube.com/@42Blake_" class="nav-button">Media</a>
+                <a href="https://github.com/EdwinS7" class="nav-button">GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="gallery">
+            <div class="gallery-item">
+                <img src="./images/Ragebot.png" alt="Ragebot">
+                <div class="description">
+                    <h3>Ragebot</h3>
+                    <p>A beautiful monochrome scene with bold contrast and geometric elements.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./images/Visuals.png" alt="Visuals">
+                <div class="description">
+                    <h3>Visuals</h3>
+                    <p>A beautiful monochrome scene with bold contrast and geometric elements.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./images/Misc.png" alt="Misc">
+                <div class="description">
+                    <h3>Miscellaneous</h3>
+                    <p>A beautiful monochrome scene with bold contrast and geometric elements.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./images/Configs.png" alt="Configs">
+                <div class="description">
+                    <h3>Configs</h3>
+                    <p>A beautiful monochrome scene with bold contrast and geometric elements.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="enlarged-view" id="enlargedView">
+            <button class="close-button" id="closeButton">&times;</button>
+            <img src="" alt="" id="enlargedImage">
+        </div>
+    </main>
+
+    <footer class="footer">
+        ❤️ Made by <a href="https://github.com/EdwinS7">edwn</a>
+    </footer>
+
+    <script>
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+        const enlargedView = document.getElementById('enlargedView');
+        const enlargedImage = document.getElementById('enlargedImage');
+        const closeButton = document.getElementById('closeButton');
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                enlargedImage.src = item.src;
+                enlargedView.style.display = 'flex';
+            });
+        });
+
+        closeButton.addEventListener('click', () => {
+            enlargedView.style.display = 'none';
+        });
+
+        enlargedView.addEventListener('click', (e) => {
+            if (e.target === enlargedView) {
+                enlargedView.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
